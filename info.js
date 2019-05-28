@@ -8,9 +8,9 @@ module.exports = class {
 
 
 	//--------------------------------------------------------------------
-	// DATABASE
+	// DATABASE INFO
 	// method get
-	getDatabaseInfo(r){
+	databaseInfoAction(r){
 		try{
 			var info = {};
 			// Get collections
@@ -36,7 +36,7 @@ module.exports = class {
 	//----------------------------------------------------------------------------
 	// FIND DATA IN COLLECTION
 	// suggested method: POST
-	postFindInCollection(r){
+	findAction(r){
 		// Get collection
 		var collection 	= (r.data&&r.data.collection) ? r.data.collection : null;
 		// Get query & projection
@@ -65,7 +65,7 @@ module.exports = class {
 				h_get : {
 					title:"Database info",
 					descr:"Get information about active database: table list, rec number, etc",
-					action: this.getDatabaseInfo
+					action: this.databaseInfoAction
 				}
 			},
 			find:{
@@ -74,7 +74,7 @@ module.exports = class {
 					descr:"Parameters:<br/>collection - collection name<br/>query<br/>projection",
 					testBody: {collection:"users", query:{id:1}, projection:{_id:0}},
 					requestBodyType: "json",
-					action: this.postFindInCollection
+					action: this.findAction
 				}
 			}
 		};
