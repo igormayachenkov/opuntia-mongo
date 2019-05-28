@@ -1,6 +1,6 @@
 {
   "name": "opuntia-mongo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A plugin for 'opuntia' framework for using it with MongoDB",
   "main": "index.js",
   "scripts": {
