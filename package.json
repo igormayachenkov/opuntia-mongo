@@ -1,0 +1,19 @@
+{
+  "name": "opuntia-mongo",
+  "version": "0.1.0",
+  "description": "A plugin for 'opuntia' framework for using the it with MongoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/igormayachenkov/opuntia-mongo.git"
+  },
+  "author": "Igor Mayachenkov",
+  "license": "MIT",
+  "dependencies": {
+    "opuntia": "^0.3.0",
+    "mongodb": "^3.2.6"
+  }
+}
