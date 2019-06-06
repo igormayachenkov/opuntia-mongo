@@ -3,7 +3,7 @@
 //--------------------------------------------------------------------
 // USERS HANDLING
 //    r.server must be opuntia-mongo.Server
-//    r.database must be set
+//    r._database must be set
 
 // insert initial user script:
 // use books
@@ -21,14 +21,18 @@ module.exports = class {
 		if(!user.login || !user.password){r.server.endWithError(r,"user must contain 'login' and 'password' fields"); return;}
 		// Check unique login
 		user.login = user.login.toLowerCase();
-		r.database.collection("users").findOne( {login: user.login},{}, function(err, dublicate){
+		r._database.collection("users").findOne( {login: user.login},{}, function(err, dublicate){
 			if(err){r.server.endWithError(r,"findOne error "+err);	return;	}
 			if(dublicate){r.server.endWithError(r,"User with the same login '"+dublicate.login+"' already exists");	return;	}
+
 			// Search MAX ID
-			r.database.collection("users").aggregate([{$group:{_id:null,max:{$max:"$id"}}}], function(err, result){
-				if(err){r.server.endWithError(r,"aggregate error "+err);	return;	}
-				// Generate ID
-				var max = result[0]?result[0].max:0;
+			var max = 0;
+			var cursor = r._database.collection("users").find({}, {_id:0, id:1});//, {_id:0});
+			cursor.forEach(function(u) {
+				if(u.id>max) max=u.id;
+			}, function(err) {
+				if(err){r.server.endWithError(r,"find error "+err);	return;	}
+				// INSERT USER
 				user.id = max+1;
 				// Set modified stamps
 				user._mt = new Date().getTime();		
@@ -37,14 +41,14 @@ module.exports = class {
 				user._ct = user._mt;		
 				user._cu = user._mu;		
 				// Insert
-				r.database.collection("users").insertOne(user, function(err,result) {
+				r._database.collection("users").insertOne(user, function(err,result) {
 					if(err)	{r.server.endWithError(r,"Database error in users.insertOne() "+err); return;}
 					// return created user without password
 					delete user.password;
 					delete user._id;
 					r.server.endWithSuccess(r, user);		
 				});
-			});	
+			});
 		});
 	}
 
@@ -60,7 +64,7 @@ module.exports = class {
 		// Check unique login if need
 		if(user.$set && user.$set.login){
 			user.$set.login = user.$set.login.toLowerCase();
-			r.database.collection("users").findOne( {login: user.login},{}, function(err, dublicate){
+			r._database.collection("users").findOne( {login: user.login},{}, function(err, dublicate){
 				if(err){r.server.endWithError(r,"findOne error "+err);	return;	}
 				if(dublicate){r.server.endWithError(r,"User with the same login already exists");	return;	}
 				// Update
@@ -92,7 +96,7 @@ module.exports = class {
 		//if(!app.onDeleteUser){ r.server.endWithError(r,"app.onDeleteUser must be implemented"); return;}
 		//app.onDeleteUser(r,function(){
 			// Delete record
-			r.database.collection("users").deleteOne( {id: user.id}, null, function(err, result){
+			r._database.collection("users").deleteOne( {id: user.id}, null, function(err, result){
 				if(err){r.server.endWithError(r,"deleteOne error "+err);	return;	}
 				// Send OK
 				r.server.endWithSuccess(r, result);

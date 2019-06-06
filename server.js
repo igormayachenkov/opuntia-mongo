@@ -9,8 +9,8 @@ module.exports = class extends opuntia.Server {
 	logResult(r, error){
         let logdata = super.logResult(r, error);
 		// Log to the database if exists 
-		if(r.database){
-			r.database.collection("logs").insertOne(logdata);
+		if(r._database){
+			r._database.collection("logs").insertOne(logdata);
 		}
   }
 
@@ -27,7 +27,7 @@ module.exports = class extends opuntia.Server {
 		doc._mt = new Date().getTime();		
 		doc._mu = r.session.user_id;		
 		// Update/insert
-		r.database.collection(collection).updateOne( { id : doc.id }, doc, { upsert : true }, function(err,commandResult) {
+		r._database.collection(collection).updateOne( { id : doc.id }, doc, { upsert : true }, function(err,commandResult) {
 			if(err)	{r.server.endWithError(r,"Database error in collection.updateOne() "+err); return;}
 			// Go next or send OK
 			if(then){
@@ -61,7 +61,7 @@ module.exports = class extends opuntia.Server {
 		r.data.$set._mt = new Date().getTime();		
 		r.data.$set._mu = r.session.user_id;		
 		// Update selected fields
-		r.database.collection(collection).updateOne({id:id}, r.data, { upsert : false }, function(err,commandResult) {
+		r._database.collection(collection).updateOne({id:id}, r.data, { upsert : false }, function(err,commandResult) {
 			if(err)	{r.server.endWithError(r,"Database error in collection.updateOne() "+err); return;}
 			// Check if id not found
 			var result = commandResult.result; // !!! see CommandResult

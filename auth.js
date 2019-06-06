@@ -3,7 +3,7 @@
 //--------------------------------------------------------------------
 // AUTHENTICATION SYSTEM IMPLEMENTATION
 //    r.server must be opuntia-mongo.Server
-//    r.database must be set
+//    r._database must be set
 
 var cookie = require('cookie');
 
@@ -40,8 +40,8 @@ module.exports = class {
 		// VERIFY SESSION & DO NEXT WORK
 		if(!sessionValue) {r.server.endUnauthorized(r, "No session in cookies or session is null");return;}
 		// Find in sessions table
-		if(!r.database) {r.server.endWithErrorCode(r, 500, "database is undefined");return;}
-		r.database.collection("sessions").findOne({session:sessionValue}, {_id:0}, function(err,session) {
+		if(!r._database) {r.server.endWithErrorCode(r, 500, "database is undefined");return;}
+		r._database.collection("sessions").findOne({session:sessionValue}, {_id:0}, function(err,session) {
 			if(err)		{r.server.endWithError(r, "findOne error: "+err);return;}
 			if(!session){r.server.endUnauthorized(r, "session not found");return;} 
 			
@@ -50,7 +50,7 @@ module.exports = class {
 	//		if(session.expires < ts) {r.server.endUnauthorized(r, "session expired");return;	}// 401 - Unautorized
 			
 			// Log the user's last access time
-			//r.database.collection("sessions").updateOne({session:session.session},{$set:{last:ts}});
+			//r._database.collection("sessions").updateOne({session:session.session},{$set:{last:ts}});
 			
 			r.session = session;
 		
@@ -69,7 +69,7 @@ module.exports = class {
 		}
 
 		// Modify database - make the session expired
-		r.database.collection("sessions").updateOne({session:r.session.session},{$set:{expires:new Date().getTime()}}, function(err,result) {
+		r._database.collection("sessions").updateOne({session:r.session.session},{$set:{expires:new Date().getTime()}}, function(err,result) {
 			if(err)	{r.server.endWithError(r,"Database error in collection.updateOne() "+err); return;}
 			// Clear cookie
 			r.response.setHeader("Set-Cookie", COOKIE_NAME+"=empty;path="+getCookiePath(r)+";Max-Age=0;");
@@ -83,7 +83,7 @@ module.exports = class {
 	//----------------------------------------------------------------------------
 	// GET INFO ABOUT THE LOGGED IN USER
 	infoAction(r){
-		r.database.collection("users").findOne(
+		r._database.collection("users").findOne(
 			{id: r.session.user_id},
 			{_id:0, login:0, password:0}, 
 			function(err, user){
@@ -114,7 +114,7 @@ module.exports = class {
 		r.data.password = r.data.password.trim();
 
 		// Modify database
-		r.database.collection("users").findOne(
+		r._database.collection("users").findOne(
 			//{login:	rq.data.login.toLowerCase()}, 
 			{login:    { $regex: new RegExp("^" + r.data.login.toLowerCase(), "i") }},// case insennsitive login
 			{_id:0}, 
@@ -147,7 +147,7 @@ module.exports = class {
 					session[key] = r.data[key]; 
 				}
 				// Insert document
-				r.database.collection("sessions").insertOne(session, function(err,result) {
+				r._database.collection("sessions").insertOne(session, function(err,result) {
 					if(err)	{r.server.endWithError(r,"Database error in collection.insertOne() "+err); return;}
 					// Set cookie
 					var dExp = new Date(session.expires);

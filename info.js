@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------------
 // THE DATABASE INFORMATION
-// r.database must be set
+// r._database must be set
 
 module.exports = class {
 
@@ -14,7 +14,7 @@ module.exports = class {
 		try{
 			var info = {};
 			// Get collections
-			r.database.collections(function(err, collections) {
+			r._database.collections(function(err, collections) {
 				if(err){
 					r.server.endWithError(r,"db.collections error: "+err);
 				}else{
@@ -44,7 +44,7 @@ module.exports = class {
 		var projection 	= (r.data&&r.data.projection) ? r.data.projection : {_id:0};
 
 		try{
-			var cursor = r.database.collection(collection).find(query, projection);//, {_id:0});
+			var cursor = r._database.collection(collection).find(query, projection);//, {_id:0});
 			var list = [];
 			cursor.forEach(function(doc) {
 				list.push(doc);
@@ -89,7 +89,7 @@ var loadCollectionCount = function(r, info, i){
 	}
 	var name=info.collections[i].name;
 	//console.log(name+' start');
-	r.database.collection(name).stats(function(err,s){				
+	r._database.collection(name).stats(function(err,s){				
 		if(!err){
 			var c = info.collections[i];
 			c.count 	= s.count;
