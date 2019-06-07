@@ -1,5 +1,7 @@
 "use strict"
 
+var auth = require('./auth');
+
 //--------------------------------------------------------------------
 // USERS HANDLING
 //    r.server must be opuntia-mongo.Server
@@ -8,7 +10,7 @@
 // insert initial user script:
 // use books
 // db.users.insert({id:1, name:'Root User', login:'root',password:'root', _ct:0, _cu:0, _mt:0, _mu:0})
-
+const MIN_PASSWORD_LENGTH = 6;
 module.exports = class {
 	//------------------------------------------------------------
 	// INSERT 
@@ -19,6 +21,7 @@ module.exports = class {
 		// Verify data
 		if(!user){r.server.endWithError(r,"data is undefined"); return;}
 		if(!user.login || !user.password){r.server.endWithError(r,"user must contain 'login' and 'password' fields"); return;}
+		if(user.password.length<MIN_PASSWORD_LENGTH){r.server.endWithError(r,"Too short password. Min password length is "+MIN_PASSWORD_LENGTH); return;}
 		// Check unique login
 		user.login = user.login.toLowerCase();
 		r._database.collection("users").findOne( {login: user.login},{}, function(err, dublicate){
@@ -32,6 +35,14 @@ module.exports = class {
 				if(u.id>max) max=u.id;
 			}, function(err) {
 				if(err){r.server.endWithError(r,"find error "+err);	return;	}
+
+				// Ecrypt the password
+				try{
+					user.password = auth.encryptPassword(user.password);
+				}catch(err){
+					r.server.endWithError(r,"encryptPassword error: "+err); return;					
+				}
+
 				// INSERT USER
 				user.id = max+1;
 				// Set modified stamps
@@ -60,7 +71,17 @@ module.exports = class {
 		if(!user){r.server.endWithError(r,"data is undefined"); return;}
 		if(!user.id){r.server.endWithError(r,"user must contain 'id' field"); return;}
 		// Verify $unset
-		if(r.data.$unset && ("login" in r.data.$unset || "password" in r.data.$unset)){r.server.endWithError(r,"'login' and 'password' fields can't be unset"); return;}
+		if(r.data.$unset && ("id" in r.data.$unset || "login" in r.data.$unset || "password" in r.data.$unset)){r.server.endWithError(r,"id,login,password can't be unset"); return;}
+
+		// Encrypt password if present
+		if(user.$set && user.$set.password){
+			try{
+				user.$set.password = auth.encryptPassword(user.$set.password);
+			}catch(err){
+				r.server.endWithError(r,"encryptPassword error: "+err); return;					
+			}
+		}
+
 		// Check unique login if need
 		if(user.$set && user.$set.login){
 			user.$set.login = user.$set.login.toLowerCase();

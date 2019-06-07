@@ -6,13 +6,25 @@
 //    r._database must be set
 
 var cookie = require('cookie');
+var crypto = require('crypto');
 
 var SESSION_VALID_TIME = 31536000000;// 365 days
 
 var COOKIE_NAME = 'session';
 
-module.exports = class {
+module.exports = class Auth{
 	setCookieName(c){COOKIE_NAME=c;}
+
+	//---------------------------------------------------------
+	// ENCRYPT PASSWORD
+	// rules: https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf
+	static encryptPassword(password,salt){
+		if(!salt) salt = crypto.randomBytes(16).toString('hex');
+		return {
+			salt: 	salt,
+			hash: 	crypto.scryptSync(password, salt, 64).toString('hex')
+		}
+	}
 
 	//---------------------------------------------------------
 	// MAIN AUTH VERIFICATION FUNCTION
@@ -88,6 +100,7 @@ module.exports = class {
 			{_id:0, login:0, password:0}, 
 			function(err, user){
 				if(err){r.server.endWithError(r,"findOne error "+err);	return;	}
+				if(user.password) delete user.password;//ensure that password is not visible
 				// return user's data
 				var ts = new Date().getTime();
 				r.server.endWithSuccess(r, {
@@ -121,15 +134,38 @@ module.exports = class {
 			function(err, user){
 				if(err){r.server.endWithError(r,"findOne error "+err);	return;	}
 
-				// Verify name / password
-				if(!(user && user.password==r.data.password)){
-					r.server.endWithError(r,"authorization failed");
+				// Verify if found
+				if(!user){
+					r.server.endWithError(r,"Authorization failed"); // login not found
 					return;
+				}
+
+				// VERIFY PASSWORD
+				if(!user.password.hash){
+					// Old variant with open text passwords
+					if(user.password!==r.data.password){
+						r.server.endWithError(r,"Authorization failed");
+						return;
+					}
+				}else{
+					// Hashed password
+					console.log("Hashed!");
+					try{
+						var encrypted = Auth.encryptPassword(r.data.password, user.password.salt);
+						if(user.password.hash !== encrypted.hash){
+							r.server.endWithError(r,"Authorization failed");
+							return;
+						}
+					}catch(err){
+						r.server.endWithError(r,"Authorization error: "+err);
+						return;
+					}
 				}
 				
 				// CREATE SESSION 
 				// Prepare data,
-				var sessionValue = r.server.randomValueBase64(12);// Create random session value
+				//var sessionValue = r.server.randomValueBase64(12);// Create random session value
+				var sessionValue = crypto.randomBytes(16).toString('hex');// Create random session value
 				var ts = new Date().getTime();
 				var session = {
 					session:		sessionValue, 
