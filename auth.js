@@ -100,6 +100,7 @@ module.exports = class Auth{
 			{_id:0, login:0, password:0}, 
 			function(err, user){
 				if(err){r.server.endWithError(r,"findOne error "+err);	return;	}
+				if(!user)return r.server.endWithErrorCode(r, 401, "user id not found, the session is invalid");
 				if(user.password) delete user.password;//ensure that password is not visible
 				// return user's data
 				var ts = new Date().getTime();

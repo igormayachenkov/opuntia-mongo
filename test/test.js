@@ -17,14 +17,6 @@ MongoClient.connect(mongoURL, function(err, mongo) {
 
 	//-------------------------------------------------------------------------------------------------
 	// CREATE & CONFIG API SERVER
-	var config = {
-		VERSION		: '1.0.0',
-		NAME       	: 'Books WEB API server',
-		PROTOCOL   	: 'http:',
-		PORT       	: 8080
-	};
-
-
 	/*
 	class MyInfo extends opuntiaMongo.Info{
 		getDatabaseInfo(r){
@@ -77,7 +69,10 @@ MongoClient.connect(mongoURL, function(err, mongo) {
 	};
 
 	// CREATE & START API SERVER
-	var server = new opuntiaMongo.Server(config, router);
+	var server = new opuntiaMongo.Server(router,{
+		PROTOCOL   	: 'http:',
+		PORT       	: 8080
+	});
 	server.listen(function(){
 		// START STATIC WEB SERVER
 		var testUrl   = "http://localhost:"+server.config.PORT+"/doc/index.html";

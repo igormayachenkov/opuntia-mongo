@@ -1,6 +1,6 @@
 {
   "name": "opuntia-mongo",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A plugin for 'opuntia' framework for using it with MongoDB",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "author": "Igor Mayachenkov",
   "license": "MIT",
   "dependencies": {
-    "opuntia": "^0.4.0",
+    "opuntia": "^0.5.0",
     "mongodb": "<3.0.0"
   }
 }

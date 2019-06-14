@@ -1,0 +1,15 @@
+{
+  "name": "opuntia-mongo-test",
+  "version": "1.0.0",
+  "description": "opuntia-mongo Test Server",
+  "main": "test.js",
+  "scripts": {
+    "start": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/igormayachenkov/opuntia-mongo.git"
+  },
+  "author": "Igor Mayachenkov",
+  "license": "MIT"
+}
