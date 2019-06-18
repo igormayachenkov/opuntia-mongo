@@ -52,7 +52,7 @@ module.exports = class {
 				r.server.endWithSuccess(r, list);
 			});
 		}catch(e){
-			common.endWithError(r,e.message);
+			r.server.endWithError(r, e.message);
 		}
 	}
 
