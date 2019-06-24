@@ -73,7 +73,7 @@ module.exports = class Auth{
 
 	//----------------------------------------------------------------------------
 	// LOGOUT 
-	actionLogout(r){
+	logoutAction(r){
 		// Verify data
 		if(!r.session.session){
 			r.server.endWithError(r,"session is undefined");
@@ -83,12 +83,12 @@ module.exports = class Auth{
 		// Modify database - make the session expired
 		r._database.collection("sessions").updateOne({session:r.session.session},{$set:{expires:new Date().getTime()}}, function(err,result) {
 			if(err)	{r.server.endWithError(r,"Database error in collection.updateOne() "+err); return;}
+			
 			// Clear cookie
 			r.response.setHeader("Set-Cookie", COOKIE_NAME+"=empty;path="+getCookiePath(r)+";Max-Age=0;");
-			//r.response.setHeader("Set-Cookie", COOKIE_NAME+"=empty;Path=/;Max-Age=0;");
-			// Send 401!
-			r.server.endWithErrorCode(r, 401, "logout by user");
-			//r.server.endWithSuccess(r, result);
+
+			// Send result
+			r.server.endWithSuccess(r, {message:"logged out by user"});
 		});
 	}
 
@@ -213,7 +213,7 @@ module.exports = class Auth{
 			logout: {
 				h_get:{
 					title: "Logout",
-					action: this.actionLogout
+					action: this.logoutAction
 				}
 			},
 			info: {
