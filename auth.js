@@ -116,14 +116,9 @@ module.exports = class Auth{
 	// LOGIN
 	loginAction(r){
 		// Verify data
-		if(!r.data.login){
-			r.server.endWithError(r,"login is undefined");
-			return;
-		}
-		if(!r.data.password){
-			r.server.endWithError(response,"password is undefined");
-			return;
-		}
+		if(!r.data) 	 	 return r.server.endWithError(r,"the request data is empty");
+		if(!r.data.login) 	 return r.server.endWithError(r,"login is undefined");
+		if(!r.data.password) return	r.server.endWithError(response,"password is undefined");
 		r.data.login 	= r.data.login.trim();
 		r.data.password = r.data.password.trim();
 
