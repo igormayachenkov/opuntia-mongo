@@ -39,12 +39,12 @@ module.exports = class {
 	findAction(r){
 		// Get collection
 		var collection 	= (r.data&&r.data.collection) ? r.data.collection : null;
-		// Get query & projection
-		var query 		= (r.data&&r.data.query) ? r.data.query : {};
-		var projection 	= (r.data&&r.data.projection) ? r.data.projection : {_id:0};
+		// Get query & options
+		var query 		= (r.data&&r.data.query)   ? r.data.query   : {};
+		var options 	= (r.data&&r.data.options) ? r.data.options : null;
 
 		try{
-			var cursor = r._database.collection(collection).find(query, projection);//, {_id:0});
+			var cursor = r._database.collection(collection).find(query, options);
 			var list = [];
 			cursor.forEach(function(doc) {
 				list.push(doc);
@@ -71,8 +71,8 @@ module.exports = class {
 			find:{
 				h_post : {
 					title:"Select rows from a collection",
-					descr:"Parameters:<br/>collection - collection name<br/>query<br/>projection",
-					testBody: {collection:"users", query:{id:1}, projection:{_id:0}},
+					descr:"Parameters:<br/>collection - collection name<br/>query<br/>options",
+					testBody: {collection:"users", query:{id:1}, options:{projection:{_id:0}}},
 					requestBodyType: "json",
 					action: this.findAction
 				}

@@ -1,15 +1,17 @@
 # opuntia-mongo. Store your data in MongoDB.
 A plugin for 'opuntia' framework for using the it with MongoDB
-Contains three modules: auth, users info
+Contains three modules: auth, users, info
+Used collection names: `users`, `sessions`, `counters`
 ## Module Auth - Autorization
 Implements opuntia auth interface (method checkAuthorized(r,next)).
 That allows use it as parameter in opuntia router.
 Exports a router to with some endpoints (`login`, `logout`, `info`) too handle authorization requests.
 ## Module Users - User List
-Allows to handle a common user list located in a MongoDB collection.
-
+Allows to handle a common user list located in `users` collection.
 ## Module Info - Database Info
 Exports some methods to get an information about the database. Mostly for development.
+## ID Generation
+Module Auth generates a new auto incremented `id_seed` for id generation on the client.
 
 # Usage Example
 ```javascript
