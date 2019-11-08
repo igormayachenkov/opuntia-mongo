@@ -3,6 +3,7 @@ const opuntia   = require("../opuntia/");
 const crypto    = require('crypto');
 
 const TIME_BASE = 1451595600000;// const for ID calculation
+const LOGS = "logs";
 
 module.exports = class extends opuntia.Server {
 	// Override: Log the request result
@@ -10,7 +11,7 @@ module.exports = class extends opuntia.Server {
         let logdata = super.logResult(r, error);
 		// Log to the database if exists 
 		if(r._database){
-			r._database.collection("logs").insertOne(logdata);
+			r._database.collection(LOGS).insertOne(logdata);
 		}
   }
 

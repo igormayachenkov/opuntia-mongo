@@ -1,7 +1,5 @@
 exports.Server = require("./server.js");
-
-exports.Info  = require("./info.js");
-exports.Auth  = require("./auth.js");
-exports.Users = require("./users.js");
+exports.info   = require("./info.js");
+exports.auth   = require("./auth.js");
+exports.users  = require("./users.js");
 exports.counters = require("./counters.js");
-

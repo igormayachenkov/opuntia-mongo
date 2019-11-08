@@ -26,9 +26,14 @@ MongoClient.connect(mongoURL, function(err, mongo) {
 	}
 	let info = new MyInfo();
 	*/
-	let auth  = new opuntiaMongo.Auth();
-	let info  = new opuntiaMongo.Info();
-	let users = new opuntiaMongo.Users();
+	
+	let auth  = opuntiaMongo.auth;
+	let info  = opuntiaMongo.info;
+	let users = opuntiaMongo.users;
+	auth.settings.TOKEN_LENGTH    = 8;
+	auth.settings.LOCAL_ID_LENGTH = 2;
+	users.settings.MIN_PASSWORD_LENGTH = 4;
+
 	var router = {
 		$title: "The router example",
 		h_get:{
