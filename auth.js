@@ -8,7 +8,9 @@
 const cookie = require('cookie');
 const crypto = require('crypto');
 const counters = require("./counters.js");
-const ApiError = require('opuntia').ApiError;
+const opuntia = require('opuntia');
+const ApiError = opuntia.error.ApiError;
+
 
 // Collection names
 const USERS 	= "users";
@@ -82,7 +84,6 @@ var login = async function(r){
 	if(!r.data.password) throw "password is undefined";
 	r.data.login 	= r.data.login.trim();
 	r.data.password = r.data.password.trim();
-	//throw new ApiError(405, "new error");
 
 	// Find the user by login
 	let user = await r._database.collection(USERS).findOne(

@@ -1,5 +1,6 @@
 "use strict"
-const opuntia   = require("../opuntia/");
+//const opuntia   = require("../opuntia/");
+const opuntia   = require("opuntia");
 const crypto    = require('crypto');
 
 const TIME_BASE = 1451595600000;// const for ID calculation
