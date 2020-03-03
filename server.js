@@ -29,7 +29,7 @@ module.exports = class extends opuntia.Server {
 		doc._mt = new Date().getTime();		
 		doc._mu = r.session.user_id;		
 		// Update/insert
-		r._database.collection(collection).updateOne( { id : doc.id }, doc, { upsert : true }, function(err,commandResult) {
+		r._database.collection(collection).update( { id : doc.id }, doc, { upsert : true }, function(err,commandResult) {
 			if(err)	{r.server.endWithError(r,"Database error in collection.updateOne() "+err); return;}
 			// Go next or send OK
 			if(then){
